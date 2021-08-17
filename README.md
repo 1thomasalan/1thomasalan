@@ -3,5 +3,6 @@
 - 🌱 I’m currently enrolled in a Web Design and Development certificate program at Cornell as a way to give me structure while I re-learn old skills and learn new ones.
 - 💞️ I’m anxious to learn and get back up to speed, and when I'm ready, excited to collaborate on projects with others.
 - 📫 How to reach me ... I'm available on Twitter @tasmilie
+- I also publish a the weekly Big in Japan newsletter about Japan if you're into that. big-in-japan.com
 
 Cheers, TA
