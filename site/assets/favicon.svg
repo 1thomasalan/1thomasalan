@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#161615"/><g transform="translate(4 11.5)"><defs><clipPath id="i"><rect x="0" y="7" width="60" height="27"/></clipPath></defs><g clip-path="url(#i)" fill="none" stroke="#ece8df" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="20">
+<path d="M4.2 12 L9 7.2 V34"/>
+<path d="M16 8 H42 M23.5 8 V34"/>
+<path d="M33 34 L42 5 L51 34"/>
+<path d="M36.1 24.6 H47.9"/>
+</g></g></svg>

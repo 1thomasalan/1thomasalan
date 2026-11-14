@@ -1,0 +1,8 @@
+/assets/*
+  Cache-Control: public, max-age=86400
+/media/*
+  Cache-Control: public, max-age=2592000
+/data/*
+  Cache-Control: public, max-age=300
+/sw.js
+  Cache-Control: no-cache

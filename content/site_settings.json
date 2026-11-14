@@ -1,0 +1,6 @@
+[{"id":"f0e6e927-f685-4db0-afdd-0d07d9952730","section_name":"blog","is_visible":true,"display_order":5,"created_at":"2025-11-11T05:50:59.898418+00:00","updated_at":"2025-11-11T05:52:56.822406+00:00"}, 
+ {"id":"89438e2c-5a94-4aad-8332-6d190beae793","section_name":"newsletter","is_visible":false,"display_order":5,"created_at":"2025-11-13T21:26:22.41428+00:00","updated_at":"2025-11-13T21:26:22.41428+00:00"}, 
+ {"id":"3cadaaa6-fbe4-4a9e-8c6f-ad8f39d000bb","section_name":"genart","is_visible":true,"display_order":3,"created_at":"2025-11-11T05:50:59.898418+00:00","updated_at":"2025-11-15T00:20:38.576033+00:00"}, 
+ {"id":"2ab20840-069e-45b0-a00f-5734896d0bdb","section_name":"photography","is_visible":true,"display_order":2,"created_at":"2025-11-11T05:50:59.898418+00:00","updated_at":"2025-11-15T00:20:53.358198+00:00"}, 
+ {"id":"2e3bfb3b-69e6-42d7-8e8a-390cb6cd17c4","section_name":"music","is_visible":true,"display_order":4,"created_at":"2025-11-11T05:50:59.898418+00:00","updated_at":"2025-11-15T04:24:24.644276+00:00"}, 
+ {"id":"9c1aa879-20aa-4f69-8ec2-02170a002e70","section_name":"projects","is_visible":true,"display_order":1,"created_at":"2025-11-11T05:50:59.898418+00:00","updated_at":"2025-11-18T20:25:14.256699+00:00"}]
