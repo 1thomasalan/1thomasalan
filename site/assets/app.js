@@ -201,12 +201,16 @@
 
     camera(slug) {
       const c = camBySlug(slug); if (!c) return notFound();
-      const ps = c.photos.map(photoById);
+      const ps = c.photos.map(photoById), g = c.gear_image;
       return `<a class="back" href="/gear" data-link>${icon.back} Gear</a>
-      <header class="page-head" style="padding-top:24px"><span class="eyebrow">Camera</span><h1 class="h1">${esc(c.body)}</h1>${c.lens?`<p class="lede">${esc(c.lens)}</p>`:''}
-      <div class="links-row">${c.amazon?`<a class="btn" href="${esc(c.amazon)}" target="_blank" rel="sponsored noopener">View on Amazon ${icon.out}</a>`:''}
-      ${ps.length?`<a class="btn" href="/photos?cam=${encodeURIComponent(c.name)}" data-link>Filter photographs</a>`:''}</div></header>
-      ${ps.length?`<div class="strip">${ps.map((p,i)=>`<a href="/photos?cam=${encodeURIComponent(c.name)}#${p.id}" data-link>${img(p.image,p.alt)}${cap(i+1,prettyTitle(p.title),p.location)}</a>`).join('')}</div>`
+      <section class="cam-top">
+        ${g ? `<figure>${img(g, `The ${c.body}`, 'prod', true)}<figcaption>Camera photo: ${esc(g.credit)}, <a href="${esc(g.source)}" target="_blank" rel="noopener">${esc(g.license)}</a>, via Wikimedia Commons</figcaption></figure>` : `<div class="type">${esc(c.body)}</div>`}
+        <header class="page-head"><span class="eyebrow">Camera</span><h1 class="h1">${esc(c.body)}</h1>${c.lens?`<p class="lede">${esc(c.lens)}</p>`:''}
+        <p class="meta">${ps.length ? `${ps.length} photograph${ps.length>1?'s':''} on the site` : 'In the collection'}</p>
+        <div class="links-row">${c.amazon?`<a class="btn solid" href="${esc(c.amazon)}" target="_blank" rel="sponsored noopener">View on Amazon ${icon.out}</a>`:''}
+        ${ps.length?`<a class="btn" href="/photos?cam=${encodeURIComponent(c.name)}" data-link>Filter photographs</a>`:''}</div></header>
+      </section>
+      ${ps.length?`<section class="sec"><div class="sec-head"><span class="eyebrow">Shot on this camera</span></div><div class="strip">${ps.map((p,i)=>`<a href="/photos?cam=${encodeURIComponent(c.name)}#${p.id}" data-link>${img(p.image,p.alt)}${cap(i+1,prettyTitle(p.title),p.location)}</a>`).join('')}</div></section>`
       : `<p class="lede">No photographs from this one on the site yet.</p>`}`;
     },
 
@@ -232,10 +236,10 @@
     }
   };
   function gearCard(c, i) {
-    const p = c.photos.length ? photoById(c.photos[0]) : null;
+    const g = c.gear_image;
     return `<a class="gcard" href="/gear/${c.slug}" data-link>
       <span class="num">${pad(i+1)}</span><h3>${esc(c.body)}</h3><div class="lens">${esc(c.lens || '\u00a0')}</div>
-      ${p ? img(p.image, `Shot on the ${c.body}`) : `<div class="type">${esc(c.body)}</div>`}
+      ${g ? img(g, `The ${c.body}`, 'prod') : `<div class="type">${esc(c.body)}</div>`}
       <div class="foot2"><span>${c.photos.length ? `${c.photos.length} photograph${c.photos.length>1?'s':''}` : 'In the collection'}</span>${c.amazon?'<span>Amazon ↗</span>':''}</div></a>`;
   }
   const notFound = () => `<header class="page-head"><span class="eyebrow">404</span><h1 class="h1">That page wandered off.</h1><p class="lede"><a href="/" data-link style="border-bottom:1px solid">Back home</a></p></header>`;

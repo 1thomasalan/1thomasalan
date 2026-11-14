@@ -1,0 +1,102 @@
+{
+ "Nikon Zf": {
+  "w": 1400,
+  "h": 1217,
+  "src": "/media/gear/nikon-zf.jpg",
+  "thumb": "/media/gear/nikon-zf-s.jpg",
+  "ratio": 1.1504,
+  "credit": "昼落ち",
+  "license": "CC0",
+  "source": "https://commons.wikimedia.org/wiki/File:Nikon_Z_f_8_nov_2023a.jpg"
+ },
+ "Fujifilm X100V": {
+  "w": 1400,
+  "h": 979,
+  "src": "/media/gear/x100v.jpg",
+  "thumb": "/media/gear/x100v-s.jpg",
+  "ratio": 1.43,
+  "credit": "昼落ち",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Fujifilm_X100V_9_feb_2020b.jpg"
+ },
+ "Fujifilm X-Pro1": {
+  "w": 1200,
+  "h": 800,
+  "src": "/media/gear/xpro1.jpg",
+  "thumb": "/media/gear/xpro1-s.jpg",
+  "ratio": 1.5,
+  "credit": "Nienetwiler",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:130128_Fujifilm_X-Pro1_004.jpg"
+ },
+ "Ricoh GR III": {
+  "w": 1400,
+  "h": 876,
+  "src": "/media/gear/gr3.jpg",
+  "thumb": "/media/gear/gr3-s.jpg",
+  "ratio": 1.5982,
+  "credit": "Stephan van Helden",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ricoh_GR_III_(5).jpg"
+ },
+ "Fujifilm X100F": {
+  "w": 1400,
+  "h": 919,
+  "src": "/media/gear/x100f.jpg",
+  "thumb": "/media/gear/x100f-s.jpg",
+  "ratio": 1.5234,
+  "credit": "Ishootyoudotcom",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Fujifilm_X100F.jpg"
+ },
+ "Nikon D2x": {
+  "w": 1400,
+  "h": 1400,
+  "src": "/media/gear/d2x.jpg",
+  "thumb": "/media/gear/d2x-s.jpg",
+  "ratio": 1.0,
+  "credit": "Rama",
+  "license": "CC BY-SA 2.0 fr",
+  "source": "https://commons.wikimedia.org/wiki/File:Nikon_D2x_0601.jpg"
+ },
+ "Nikon D700": {
+  "w": 1400,
+  "h": 1043,
+  "src": "/media/gear/d700.jpg",
+  "thumb": "/media/gear/d700-s.jpg",
+  "ratio": 1.3423,
+  "credit": "Хрюша (derivative)",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Nikon_D700_Body.jpg"
+ },
+ "Fujifilm X100": {
+  "w": 1400,
+  "h": 1050,
+  "src": "/media/gear/x100.jpg",
+  "thumb": "/media/gear/x100-s.jpg",
+  "ratio": 1.3333,
+  "credit": "Darren Stone (derivative)",
+  "license": "CC BY-SA 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Fujifilm_FinePix_X100_in_the_box_cropped.jpg"
+ },
+ "Nikon D4": {
+  "w": 1400,
+  "h": 1400,
+  "src": "/media/gear/d4.jpg",
+  "thumb": "/media/gear/d4-s.jpg",
+  "ratio": 1.0,
+  "credit": "Zebarth",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Nikon_D4.jpg"
+ },
+ "Canon EOS-1Ds Mark III": {
+  "w": 1400,
+  "h": 1400,
+  "src": "/media/gear/1ds3.jpg",
+  "thumb": "/media/gear/1ds3-s.jpg",
+  "ratio": 1.0,
+  "credit": "Rama",
+  "license": "CC BY-SA 2.0 fr",
+  "source": "https://commons.wikimedia.org/wiki/File:EOS_1Ds_Mark_III_img_0828.jpg"
+ }
+}

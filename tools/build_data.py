@@ -38,6 +38,10 @@ for c in L('cameras'):
     name=c['name']; shots=[p['id'] for p in photos if p['camera']==name]
     cams.append({'name':name,'slug':slug(name),'body':re.split(r'\s*[,\-–]\s+',name)[0],'lens':(re.split(r'\s*[,\-–]\s+',name,1)+[''])[1],
                  'photos':shots,'amazon':''})
+gear_imgs=json.load(open(E+'/gear_images.json')) if os.path.exists(E+'/gear_images.json') else {}
+PRETTY={'Sony RX1rIII':'Sony RX1R III','Canon 1Ds MarkIII':'Canon EOS-1Ds Mark III'}
+for c in cams: c['body']=PRETTY.get(c['body'],c['body'])
+for c in cams: c['gear_image']=gear_imgs.get(c['body'])  # product photos (Wikimedia Commons, credited); media/gear/
 cams.sort(key=lambda c:-len(c['photos']))
 
 audio={f.split('-')[0]:f for f in os.listdir(f'{E}/audio')}
