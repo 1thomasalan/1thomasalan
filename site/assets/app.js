@@ -397,10 +397,12 @@
     function loop() { draw(); raf = (NOW && !audio.paused && !document.hidden) ? requestAnimationFrame(loop) : 0; }
     const kick = () => { if (NOW) load(NOW.slug); if (!raf) loop(); };
     // seek by tap/drag on any waveform; starts that song if it isn't playing
-    let dragEl = null;
+    let dragEl = null, pending = null;
+    const applyPending = () => { if (pending !== null && isFinite(audio.duration) && audio.duration > 0) { audio.currentTime = pending * audio.duration; pending = null; } };
+    ['loadedmetadata','canplay','playing','durationchange'].forEach(ev => audio.addEventListener(ev, applyPending));
     const seekTo = (el, clientX) => { const r = el.getBoundingClientRect(), f = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
       const slug = el.dataset.wave;
-      if (!NOW || NOW.slug !== slug) { playSlug(slug); audio.addEventListener('loadedmetadata', () => { audio.currentTime = f * audio.duration; }, { once: true }); }
+      if (!NOW || NOW.slug !== slug) { pending = f; playSlug(slug); }
       else if (audio.duration) { audio.currentTime = f * audio.duration; if (audio.paused) audio.play().catch(()=>{}); }
       draw(); };
     document.addEventListener('pointerdown', e => { const el = e.target.closest('.wv'); if (!el) return; dragEl = el; seekTo(el, e.clientX); });
