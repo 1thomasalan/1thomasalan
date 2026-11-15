@@ -54,7 +54,7 @@
         <div class="sec-head"><span class="eyebrow">Listening</span><a class="more" href="/music" data-link>All ${D.music.length} songs</a></div>
         <div class="track-feature">
           <a href="/music/${t.slug}" data-link>${img(t.cover, t.title)}</a>
-          <div><span class="eyebrow">${esc(t.genre)} · ${esc(t.year)}</span><h3>${esc(t.title)}</h3>
+          <div><span class="eyebrow">${t.new?'New · ':''}${esc(t.genre)} · ${esc(t.year)}</span><h3>${esc(t.title)}</h3>
           <p class="sub" style="margin:0;color:var(--muted)">Songs written from journal entries, produced with AI.</p>
           <div class="acts"><button class="btn solid" data-play="${t.slug}">${icon.play} Play</button>${t.spotify?`<a class="btn" href="${esc(t.spotify)}" target="_blank" rel="noopener">${icon.spotify} Spotify</a>`:''}${t.apple?`<a class="btn" href="${esc(t.apple)}" target="_blank" rel="noopener">${icon.apple} Apple Music</a>`:''}</div></div>
         </div>
