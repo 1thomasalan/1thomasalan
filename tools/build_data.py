@@ -80,7 +80,8 @@ ab=L('about_page')[0]
 about={'name':'Thomas Alan Smilie','subtitle':ab['subtitle'],'content':ab['content'],'portrait':img(ab['image_url'],'about',1400,700),
   'linkedin':'https://www.linkedin.com/in/tasmilie','writing':'https://onetobetter.com'}
 site={'title':'Thomas Alan','tagline':'Photographs, songs, and things I build, from Okinawa.','photos':photos,'categories':categories,
-  'cameras':cams,'music':music,'art':art,'projects':projects,'about':about,'amazon_tag':''}
+  'cameras':cams,'music':music,'art':art,'projects':projects,'about':about,'amazon_tag':'',
+  'spotlight':json.load(open('content/spotlight.json'))}  # home Featured: newest 4 by date
 os.makedirs(f'{S}/data',exist_ok=True)
 json.dump(site,open(f'{S}/data/site.json','w'),ensure_ascii=False,indent=1)
 print(len(photos),len(categories),len(cams),len(music),len(art),len(projects))

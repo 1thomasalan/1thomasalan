@@ -6,7 +6,7 @@
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pad = n => String(n).padStart(2, '0');
   const mmss = s => isFinite(s) ? `${Math.floor(s/60)}:${pad(Math.floor(s%60))}` : '0:00';
-  const wave = m => m.peaks ? `<div class="wv" data-wave="${m.slug}" role="slider" tabindex="0" aria-label="Seek ${esc(m.title)}" aria-valuemin="0" aria-valuemax="${m.duration||0}" aria-valuenow="0"><canvas aria-hidden="true"></canvas><span class="wv-t"><b>0:00</b> / ${mmss(m.duration)}</span></div>` : '';
+  const wave = m => m.peaks ? `<canvas class="eqv" data-eq="${m.slug}" aria-hidden="true"></canvas><div class="wv" data-wave="${m.slug}" role="slider" tabindex="0" aria-label="Seek ${esc(m.title)}" aria-valuemin="0" aria-valuemax="${m.duration||0}" aria-valuenow="0"><canvas aria-hidden="true"></canvas><span class="wv-t"><b>0:00</b> / ${mmss(m.duration)}</span></div>` : '';
   const paras = t => String(t||'').split(/\n\s*\n/).map(p => `<p>${esc(p.trim()).replace(/\n/g,'<br>')}</p>`).join('');
   const main = $('#main');
   let D = null;
@@ -31,12 +31,45 @@
   const photoById = id => D.photos.find(p => p.id === id);
   const prettyTitle = t => t.replace(/[-_]/g,' ').replace(/\s+/g,' ').trim();
 
+  /* ---------- Featured rail: newest 4 entries of D.spotlight (content/spotlight.json), any section ---------- */
+  const SPOT = {
+    music:   { label: 'Music',   find: id => D.music.find(x => x.slug === id),    href: x => `/music/${x.slug}`,    pic: x => x.cover, sub: x => [x.genre, x.duration ? mmss(x.duration) : ''].filter(Boolean).join(' · ') },
+    project: { label: 'Project', find: id => D.projects.find(x => x.slug === id), href: x => `/projects/${x.slug}`, pic: x => x.image, sub: x => x.summary || x.type || '' },
+    art:     { label: 'Art',     find: id => D.art.find(x => x.slug === id),      href: x => `/art/${x.slug}`,      pic: x => x.image, sub: x => (String(x.description||'').split('\n')[0]) || x.year },
+    photo:   { label: 'Photo',   find: id => photoById(id),                       href: x => `/photos#${x.id}`,     pic: x => x.image, sub: x => [x.location, String(x.camera||'').split(/,| - /)[0].trim()].filter(Boolean).join(' · ') }
+  };
+  const spotTitle = s => s.type === 'photo' ? prettyTitle(s.item.title) : s.item.title;
+  function spotlight() {
+    const list = (D.spotlight || []).map((s, i) => ({ ...s, i, item: SPOT[s.type] && SPOT[s.type].find(s.id) })).filter(s => s.item)
+      .sort((a, b) => String(b.date).localeCompare(String(a.date)) || a.i - b.i).slice(0, 4);
+    if (!list.length && D.music[0]) list.push({ type: 'music', id: D.music[0].slug, item: D.music[0], date: '' });
+    return list;
+  }
+  function featuredRail(spot) {
+    if (!spot.length) return '';
+    const [lead, ...rest] = spot, T = SPOT[lead.type], x = lead.item;
+    const fresh = lead.date && (Date.now() - Date.parse(lead.date + 'T00:00:00+09:00')) < 14 * 864e5;
+    const eb = `<span class="eyebrow">${fresh ? '<b>New</b> · ' : ''}${T.label}</span>`;
+    const leadHTML = lead.type === 'music'
+      ? `<div class="ft-lead music"><a href="${T.href(x)}" data-link>${img(T.pic(x), x.title, '', true)}</a>
+          <div class="ft-txt">${eb}<h2><a href="${T.href(x)}" data-link>${esc(x.title)}</a></h2><p class="sub">${esc(T.sub(x))}</p>
+          <div class="acts"><button class="btn solid" data-play="${x.slug}">${icon.play} Play</button><a class="btn" href="${T.href(x)}" data-link>Song page</a>${x.spotify?`<a class="btn" href="${esc(x.spotify)}" target="_blank" rel="noopener">${icon.spotify} Spotify</a>`:''}</div>${wave(x)}</div></div>`
+      : `<a class="ft-lead pic ${lead.type}" href="${T.href(x)}" data-link>${img(T.pic(x), x.alt || x.title, '', true)}
+          <div class="ft-txt">${eb}<h2>${esc(spotTitle(lead))}</h2><p class="sub">${esc(T.sub(x))}</p></div></a>`;
+    const side = rest.map(s => { const S = SPOT[s.type], y = s.item;
+      return `<a class="ft-mini" href="${S.href(y)}" data-link>${img(S.pic(y), y.alt || y.title)}<div><span class="eyebrow">${S.label}</span><h3>${esc(spotTitle(s))}</h3><p>${esc(S.sub(y))}</p></div></a>`; }).join('');
+    return `<section class="featured" aria-label="Featured"><div class="sec-head"><span class="eyebrow">Featured</span></div>
+      <div class="ft${rest.length ? '' : ' solo'}">${leadHTML}${rest.length ? `<div class="ft-side">${side}</div>` : ''}</div></section>`;
+  }
+
   /* ---------- views ---------- */
   const views = {
     home() {
-      const feat = D.photos.filter(p => p.featured).concat(D.photos.filter(p => !p.featured)).slice(0, 3);
+      const spot = spotlight(), spotPhoto = new Set(spot.filter(x => x.type === 'photo').map(x => x.item.id));
+      const pool = D.photos.filter(p => !spotPhoto.has(p.id));
+      const feat = pool.filter(p => p.featured).concat(pool.filter(p => !p.featured)).slice(0, 3);
       const t = D.music.find(m => m.featured) || D.music[0];
-      return `
+      return `${featuredRail(spot)}
       <section class="intro">
         <p class="lede">${esc(D.tagline)} Made with cameras, code, and a little help from AI.</p>
         <div class="meta">Okinawa, Japan<br>Creative technologist</div>
@@ -353,17 +386,17 @@
   });
 
   /* ---------- visualizer: song waveform scrubber + mini-player bars ----------
-     Driven by a precomputed beat envelope (/media/audio/<slug>.viz.txt: 4 bands x 20 fps),
+     Driven by a precomputed beat envelope (/media/audio/<slug>.viz.txt: 16 log bands x 20 fps),
      so the audio element is never routed through Web Audio (keeps iOS lock-screen playback intact). */
   const VIZ = (() => {
-    const B36 = '0123456789abcdefghijklmnopqrstuvwxyz', env = {}, lvl = [0,0,0,0];
+    const B36 = '0123456789abcdefghijklmnopqrstuvwxyz', NB = 16, env = {}, lvl = [0,0,0,0], band = new Array(NB).fill(0);
     const still = matchMedia('(prefers-reduced-motion: reduce)');
     let raf = 0;
     const load = slug => { if (env[slug] !== undefined) return; env[slug] = null;
       fetch(`/media/audio/${slug}.viz.txt`).then(r => r.ok ? r.text() : '').then(t => { env[slug] = t || ''; }).catch(() => {}); };
-    const sample = () => { const e = NOW && env[NOW.slug]; if (!e) return [0,0,0,0];
-      const i = Math.min(Math.floor(audio.currentTime * 20), e.length / 4 - 1) * 4;
-      return [0,1,2,3].map(k => B36.indexOf(e[i + k]) / 35); };
+    const sample = () => { const e = NOW && env[NOW.slug], z = new Array(NB).fill(0); if (!e) return z;
+      const i = Math.min(Math.floor(audio.currentTime * 20), e.length / NB - 1) * NB;
+      return z.map((_, k) => Math.max(0, B36.indexOf(e[i + k])) / 35); };
     const size = c => { const r = devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
       if (c.width !== Math.round(w * r) || c.height !== Math.round(h * r)) { c.width = Math.round(w * r); c.height = Math.round(h * r); }
       const x = c.getContext('2d'); x.setTransform(r, 0, 0, r, 0, 0); x.clearRect(0, 0, w, h); return [x, w, h]; };
@@ -388,11 +421,25 @@
       v.forEach((a, i) => { const bh = playing && !still.matches ? 3 + a * (h - 3) : 3 + [.3,.6,.45,.5,.25][i] * (h - 3) * (playing ? 1 : .5);
         x.fillRect(i * bw + bw * .2, h - bh, bw * .6, bh); });
     }
+    // dancing bars above a waveform: bass left, highs right, interpolated from the 16 bands
+    function drawEq(c, fg, playing) {
+      const wc = c.nextElementSibling && c.nextElementSibling.querySelector('canvas'); if (wc && wc.clientWidth) c.style.width = wc.clientWidth + 'px';
+      const on = NOW && NOW.slug === c.dataset.eq, live = on && playing, [x, w, h] = size(c);
+      const n = w < 420 ? 22 : 32, gap = n > 24 ? 3 : 4, bw = (w - gap * (n - 1)) / n; x.fillStyle = fg;
+      for (let i = 0; i < n; i++) {
+        const f = i / (n - 1) * (NB - 1), k = Math.floor(f), t = f - k, a = band[k] * (1 - t) + (band[Math.min(NB - 1, k + 1)] || 0) * t;
+        let bh = 2;
+        if (live) bh = still.matches ? 4 + (.35 + .3 * Math.sin(i * 1.7)) * (h - 4) * .6 : 3 + Math.pow(a, 1.15) * (h - 3);
+        x.globalAlpha = live ? .78 : .16; x.fillRect(i * (bw + gap), h - bh, bw, bh);
+      }
+      x.globalAlpha = 1;
+    }
     function draw() {
       const playing = NOW && !audio.paused, s = sample();
-      for (let k = 0; k < 4; k++) lvl[k] = s[k] > lvl[k] ? lvl[k] + (s[k] - lvl[k]) * .6 : lvl[k] * .86 + s[k] * .14;
+      for (let k = 0; k < NB; k++) band[k] = s[k] > band[k] ? band[k] + (s[k] - band[k]) * .65 : band[k] * .84 + s[k] * .16;
+      for (let g = 0; g < 4; g++) lvl[g] = (band[g * 4] + band[g * 4 + 1] + band[g * 4 + 2] + band[g * 4 + 3]) / 4;
       const fg = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim() || '#1b1b1a';
-      $$('.wv').forEach(el => drawWave(el, fg, playing)); drawBars(fg, playing);
+      $$('.wv').forEach(el => drawWave(el, fg, playing)); $$('.eqv').forEach(c => drawEq(c, fg, playing)); drawBars(fg, playing);
     }
     function loop() { draw(); raf = (NOW && !audio.paused && !document.hidden) ? requestAnimationFrame(loop) : 0; }
     const kick = () => { if (NOW) load(NOW.slug); if (!raf) loop(); };
