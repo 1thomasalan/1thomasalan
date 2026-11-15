@@ -209,7 +209,7 @@ a:hover .ph img,button:hover .ph img{transform:scale(1.02)}
 .pl-art img{width:48px;height:48px;object-fit:cover;border-radius:6px}
 .pl-meta{min-width:0;line-height:1.3}
 .pl-meta b{display:block;font:400 15px var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pl-meta span{font-size:11.5px;color:var(--muted)}
+.pl-meta span{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .player .i-pause{display:none}.player.playing .i-pause{display:block}.player.playing .i-play{display:none}
 .pl-viz{width:26px;height:18px;display:block}
 .pl-bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--rule)}
