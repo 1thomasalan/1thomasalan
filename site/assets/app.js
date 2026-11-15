@@ -6,6 +6,7 @@
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pad = n => String(n).padStart(2, '0');
   const mmss = s => isFinite(s) ? `${Math.floor(s/60)}:${pad(Math.floor(s%60))}` : '0:00';
+  const wave = m => m.peaks ? `<div class="wv" data-wave="${m.slug}" role="slider" tabindex="0" aria-label="Seek ${esc(m.title)}" aria-valuemin="0" aria-valuemax="${m.duration||0}" aria-valuenow="0"><canvas aria-hidden="true"></canvas><span class="wv-t"><b>0:00</b> / ${mmss(m.duration)}</span></div>` : '';
   const paras = t => String(t||'').split(/\n\s*\n/).map(p => `<p>${esc(p.trim()).replace(/\n/g,'<br>')}</p>`).join('');
   const main = $('#main');
   let D = null;
@@ -56,7 +57,7 @@
           <a href="/music/${t.slug}" data-link>${img(t.cover, t.title)}</a>
           <div><span class="eyebrow">${t.new?'New · ':''}${esc(t.genre)} · ${esc(t.year)}</span><h3>${esc(t.title)}</h3>
           <p class="sub" style="margin:0;color:var(--muted)">Songs written from journal entries, produced with AI.</p>
-          <div class="acts"><button class="btn solid" data-play="${t.slug}">${icon.play} Play</button>${t.spotify?`<a class="btn" href="${esc(t.spotify)}" target="_blank" rel="noopener">${icon.spotify} Spotify</a>`:''}${t.apple?`<a class="btn" href="${esc(t.apple)}" target="_blank" rel="noopener">${icon.apple} Apple Music</a>`:''}</div></div>
+          <div class="acts"><button class="btn solid" data-play="${t.slug}">${icon.play} Play</button>${t.spotify?`<a class="btn" href="${esc(t.spotify)}" target="_blank" rel="noopener">${icon.spotify} Spotify</a>`:''}${t.apple?`<a class="btn" href="${esc(t.apple)}" target="_blank" rel="noopener">${icon.apple} Apple Music</a>`:''}</div>${wave(t)}</div>
         </div>
       </section>
 
@@ -138,7 +139,7 @@
       <section class="np" id="np">
         ${img(t.cover, t.title, '', true)}
         <div><span class="eyebrow">Now playing · ${esc(t.genre)}</span><h2>${esc(t.title)}</h2><div class="sub">${esc(t.year)}${t.tools.length?' · '+t.tools.map(esc).join(', '):''}</div>
-          <div class="scrub"><span id="sCur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek"><span id="sDur">${mmss(t.duration)}</span></div>
+          ${wave(t)}
           <div class="acts"><button class="btn solid" data-play="${t.slug}" id="npBtn">${icon.play} Play</button>
           ${t.spotify?`<a class="btn" href="${esc(t.spotify)}" target="_blank" rel="noopener">${icon.spotify} Spotify</a>`:''}
           ${t.apple?`<a class="btn" href="${esc(t.apple)}" target="_blank" rel="noopener">${icon.apple} Apple Music</a>`:''}
@@ -163,7 +164,7 @@
         <div><span class="eyebrow">${esc(m.genre)} · ${esc(m.year)}</span><h2>${esc(m.title)}</h2>
           <div class="acts"><button class="btn solid" data-play="${m.slug}">${icon.play} Play</button>
           ${m.spotify?`<a class="btn" href="${esc(m.spotify)}" target="_blank" rel="noopener">${icon.spotify} Spotify</a>`:''}
-          ${m.apple?`<a class="btn" href="${esc(m.apple)}" target="_blank" rel="noopener">${icon.apple} Apple Music</a>`:''}</div></div>
+          ${m.apple?`<a class="btn" href="${esc(m.apple)}" target="_blank" rel="noopener">${icon.apple} Apple Music</a>`:''}</div>${wave(m)}</div>
       </section>
       <div class="detail">
         <div class="prose">${paras(m.description)}${m.inspiration?`<h3 class="h2" style="margin:1.6em 0 .6em">Inspiration</h3>${paras(m.inspiration)}`:''}${m.lyrics?`<h3 class="h2" style="margin:1.6em 0 .6em">Lyrics</h3><div class="lyrics">${esc(m.lyrics)}</div>`:''}</div>
@@ -258,7 +259,7 @@
     else if (a === 'gear') { html = b ? views.camera(b) : views.gear(); title = b && camBySlug(b)?.name; }
     else if (a === 'about') html = views.about();
     else html = notFound();
-    main.innerHTML = html; $$('img',main).forEach(i=>{ if(i.complete&&i.naturalWidth) i.classList.add('ok'); }); main.classList.remove('enter'); void main.offsetWidth; main.classList.add('enter');
+    main.innerHTML = html; $$('img',main).forEach(i=>{ if(i.complete&&i.naturalWidth) i.classList.add('ok'); }); main.classList.remove('enter'); void main.offsetWidth; main.classList.add('enter'); if (window.VIZ_READY) VIZ.draw();
     document.title = (title ? title + ' · ' : (titles[tab] && tab!=='home' ? titles[tab] + ' · ' : '')) + 'Thomas Alan';
     $$('.nav a, .tabs a').forEach(l => { const p = new URL(l.href).pathname.split('/')[1] || 'home'; l.classList.toggle('on', p === tab); });
     $('#menuSheet').hidden = true; $('#menuBtn').setAttribute('aria-expanded','false');
@@ -328,6 +329,7 @@
       navigator.mediaSession.setActionHandler('nexttrack', next); navigator.mediaSession.setActionHandler('previoustrack', () => nextBy(-1));
     }
     if (location.pathname === '/music') { const y = scrollY; main.innerHTML = views.music(); scrollTo(0, y); }
+    VIZ.kick();
     syncPlayerUI();
   }
   const nextBy = d => { const i = D.music.indexOf(NOW); playSlug(D.music[(i + d + D.music.length) % D.music.length].slug); };
@@ -347,16 +349,78 @@
   audio.addEventListener('play', syncPlayerUI); audio.addEventListener('pause', syncPlayerUI); audio.addEventListener('ended', next);
   audio.addEventListener('timeupdate', () => {
     const p = audio.duration ? audio.currentTime / audio.duration : 0; $('#plProg').style.width = (p * 100) + '%';
-    const seek = $('#seek'); if (seek && NOW && $('#np')?.querySelector(`[data-play="${NOW.slug}"]`)) { seek.value = p * 1000; $('#sCur').textContent = mmss(audio.currentTime); $('#sDur').textContent = mmss(audio.duration); }
+    if (!VIZ.raf) VIZ.draw();
   });
-  document.addEventListener('input', e => { if (e.target.id === 'seek' && NOW && audio.duration) audio.currentTime = e.target.value / 1000 * audio.duration; });
+
+  /* ---------- visualizer: song waveform scrubber + mini-player bars ----------
+     Driven by a precomputed beat envelope (/media/audio/<slug>.viz.txt: 4 bands x 20 fps),
+     so the audio element is never routed through Web Audio (keeps iOS lock-screen playback intact). */
+  const VIZ = (() => {
+    const B36 = '0123456789abcdefghijklmnopqrstuvwxyz', env = {}, lvl = [0,0,0,0];
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    let raf = 0;
+    const load = slug => { if (env[slug] !== undefined) return; env[slug] = null;
+      fetch(`/media/audio/${slug}.viz.txt`).then(r => r.ok ? r.text() : '').then(t => { env[slug] = t || ''; }).catch(() => {}); };
+    const sample = () => { const e = NOW && env[NOW.slug]; if (!e) return [0,0,0,0];
+      const i = Math.min(Math.floor(audio.currentTime * 20), e.length / 4 - 1) * 4;
+      return [0,1,2,3].map(k => B36.indexOf(e[i + k]) / 35); };
+    const size = c => { const r = devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+      if (c.width !== Math.round(w * r) || c.height !== Math.round(h * r)) { c.width = Math.round(w * r); c.height = Math.round(h * r); }
+      const x = c.getContext('2d'); x.setTransform(r, 0, 0, r, 0, 0); x.clearRect(0, 0, w, h); return [x, w, h]; };
+    function drawWave(el, fg, playing) {
+      const m = D.music.find(x => x.slug === el.dataset.wave); if (!m || !m.peaks) return;
+      const on = NOW && NOW.slug === m.slug, p = on && audio.duration ? audio.currentTime / audio.duration : 0;
+      const [x, w, h] = size(el.querySelector('canvas')), n = m.peaks.length, bw = w / n, ph = p * n;
+      x.fillStyle = fg;
+      for (let i = 0; i < n; i++) {
+        let v = .1 + m.peaks[i] / 99 * .9;
+        if (on && playing && !still.matches && i < ph) { const d = ph - i; v *= 1 + (lvl[0] * .55 + lvl[1] * .25) * Math.exp(-d / 5); }
+        const bh = Math.max(2, Math.min(h, v * h * .82));
+        x.globalAlpha = i < ph ? 1 : .24; x.fillRect(i * bw + bw * .22, (h - bh) / 2, Math.max(1, bw * .56), bh);
+      }
+      x.globalAlpha = 1;
+      if (on) { el.querySelector('.wv-t b').textContent = mmss(audio.currentTime); el.setAttribute('aria-valuenow', Math.round(audio.currentTime)); }
+      else el.querySelector('.wv-t b').textContent = '0:00';
+    }
+    function drawBars(fg, playing) {
+      const c = $('#plViz'); if (!c || player.hidden) return; const [x, w, h] = size(c);
+      const v = [lvl[1], lvl[0], (lvl[1] + lvl[2]) / 2, lvl[2], lvl[3]], bw = w / 5; x.fillStyle = fg;
+      v.forEach((a, i) => { const bh = playing && !still.matches ? 3 + a * (h - 3) : 3 + [.3,.6,.45,.5,.25][i] * (h - 3) * (playing ? 1 : .5);
+        x.fillRect(i * bw + bw * .2, h - bh, bw * .6, bh); });
+    }
+    function draw() {
+      const playing = NOW && !audio.paused, s = sample();
+      for (let k = 0; k < 4; k++) lvl[k] = s[k] > lvl[k] ? lvl[k] + (s[k] - lvl[k]) * .6 : lvl[k] * .86 + s[k] * .14;
+      const fg = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim() || '#1b1b1a';
+      $$('.wv').forEach(el => drawWave(el, fg, playing)); drawBars(fg, playing);
+    }
+    function loop() { draw(); raf = (NOW && !audio.paused && !document.hidden) ? requestAnimationFrame(loop) : 0; }
+    const kick = () => { if (NOW) load(NOW.slug); if (!raf) loop(); };
+    // seek by tap/drag on any waveform; starts that song if it isn't playing
+    let dragEl = null;
+    const seekTo = (el, clientX) => { const r = el.getBoundingClientRect(), f = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+      const slug = el.dataset.wave;
+      if (!NOW || NOW.slug !== slug) { playSlug(slug); audio.addEventListener('loadedmetadata', () => { audio.currentTime = f * audio.duration; }, { once: true }); }
+      else if (audio.duration) { audio.currentTime = f * audio.duration; if (audio.paused) audio.play().catch(()=>{}); }
+      draw(); };
+    document.addEventListener('pointerdown', e => { const el = e.target.closest('.wv'); if (!el) return; dragEl = el; seekTo(el, e.clientX); });
+    document.addEventListener('pointermove', e => { if (dragEl && e.buttons) { e.preventDefault(); seekTo(dragEl, e.clientX); } });
+    document.addEventListener('pointerup', () => { dragEl = null; });
+    document.addEventListener('keydown', e => { const el = e.target.closest && e.target.closest('.wv'); if (!el || !NOW || NOW.slug !== el.dataset.wave) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); audio.currentTime = Math.max(0, audio.currentTime + (e.key === 'ArrowRight' ? 5 : -5)); draw(); } });
+    ['play','seeked','loadedmetadata'].forEach(ev => audio.addEventListener(ev, kick));
+    audio.addEventListener('pause', draw);
+    document.addEventListener('visibilitychange', kick);
+    addEventListener('resize', draw);
+    return { draw, get raf() { return raf; }, kick };
+  })();
 
   /* ---------- boot ---------- */
   $('#yr').textContent = new Date().getFullYear();
   fetch('/data/site.json').then(r => r.json()).then(d => {
     D = d;
     if (D.cameras.some(c => c.amazon)) $('#disclosure').hidden = false;
-    route(false);
+    window.VIZ_READY = true; route(false);
   });
   if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 })();
