@@ -335,3 +335,13 @@ a:hover .ph img,button:hover .ph img{transform:scale(1.02)}
   .eqv{height:36px;max-width:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.pshots{max-width:1040px;margin:0 auto}
+.pshots.has-phone{max-width:1200px;display:grid;grid-template-columns:1fr 210px;gap:clamp(16px,2.4vw,32px);align-items:end}
+.pshots .frame{max-width:none;margin:0}
+.phone-frame{border:1px solid var(--rule);border-radius:26px;padding:7px;background:var(--card)}
+.phone-frame img{display:block;width:100%;border-radius:20px}
+.facts .stack{list-style:none;margin:0;padding:0}
+.facts .stack li{padding:2px 0}
+@media (max-width:760px){.pshots.has-phone{grid-template-columns:1fr}.phone-frame{width:min(220px,60%);margin:0 auto}}
+.facts div.blk{flex-direction:column;gap:6px}.facts div.blk dd{text-align:left;line-height:1.55}

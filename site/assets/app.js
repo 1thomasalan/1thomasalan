@@ -81,7 +81,7 @@
 
       <section class="sec">
         <div class="sec-head"><span class="eyebrow">Projects</span><a class="more" href="/projects" data-link>All projects</a></div>
-        <div class="row3">${D.projects.map((p,i)=>`<a class="card" href="/projects/${p.slug}" data-link>${img(p.image,p.title)}${cap(i+1,p.type,p.year)}<h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p></a>`).join('')}</div>
+        <div class="row3">${D.projects.slice(0,3).map((p,i)=>`<a class="card" href="/projects/${p.slug}" data-link>${img(p.image,p.title)}${cap(i+1,p.type,p.year)}<h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p></a>`).join('')}</div>
       </section>
 
       <section class="sec">
@@ -152,14 +152,15 @@
       return `
       <a class="back" href="/projects" data-link>${icon.back} Projects</a>
       <header class="page-head" style="padding-top:24px"><span class="eyebrow">${esc(p.type)} · ${esc(p.year)}</span><h1 class="h1">${esc(p.title)}</h1><p class="lede">${esc(p.summary)}</p></header>
-      <div class="frame"><div class="bar"><i></i><i></i><i></i><span>${esc(host)}</span></div>${p.image?`<img src="${p.image.src}" alt="${esc(p.title)}">`:''}</div>
+      <div class="pshots${p.phone?' has-phone':''}"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>${esc(host)}</span></div>${p.image?`<img src="${p.image.src}" alt="${esc(p.title)} on desktop">`:''}</div>${p.phone?`<div class="phone-frame"><img src="${p.phone.src}" alt="${esc(p.title)} on a phone, dark mode" loading="lazy"></div>`:''}</div>
       <div class="detail">
         <div class="prose">${paras(p.description)}</div>
         <aside class="facts"><dl>
           <div><dt>Year</dt><dd>${esc(p.year)}</dd></div>
           <div><dt>Type</dt><dd>${esc(p.type)}</dd></div>
           <div><dt>Category</dt><dd>${esc(p.category)}</dd></div>
-          ${p.tags.length?`<div><dt>Built with</dt><dd>${p.tags.map(esc).join(', ')}</dd></div>`:''}
+          ${p.built_with?`<div class="blk"><dt>Built with</dt><dd>${esc(p.built_with)}</dd></div>`:(p.tags.length?`<div><dt>Built with</dt><dd>${p.tags.map(esc).join(', ')}</dd></div>`:'')}
+          ${p.stack&&p.stack.length?`<div class="blk"><dt>Tech stack</dt><dd><ul class="stack">${p.stack.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></dd></div>`:''}
         </dl>${p.url?`<a class="btn solid" href="${esc(p.url)}" target="_blank" rel="noopener">Visit ${esc(host)} ${icon.out}</a>`:''}</aside>
       </div>`;
     },

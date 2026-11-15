@@ -1,6 +1,7 @@
 [
-  {"type": "music",   "id": "rearview",           "date": "2026-11-15"},
-  {"type": "project", "id": "parametra-music",    "date": "2026-11-14"},
-  {"type": "photo",   "id": "FsdLZtw9",           "date": "2026-11-14"},
-  {"type": "art",     "id": "beauty-in-the-storm","date": "2026-11-14"}
+  {"type": "project", "id": "nagi-do", "date": "2026-11-16"},
+  {"type": "music", "id": "rearview", "date": "2026-11-15"},
+  {"type": "project", "id": "parametra-music", "date": "2026-11-14"},
+  {"type": "photo", "id": "FsdLZtw9", "date": "2026-11-14"},
+  {"type": "art", "id": "beauty-in-the-storm", "date": "2026-11-14"}
 ]

@@ -70,12 +70,20 @@ art=[{'title':a['title'],'slug':a['slug'],'description':a['description'],'year':
 ptags={}
 for t in L('project_tags'): ptags.setdefault(t['project_id'],[]).append(tags.get(t['tag_id']))
 built={'parametra-music':['Suno','Lovable','Web Audio'],'the-poetic-ai':['Replit','Vibe-coding'],'photo-bookshelf':['Lovable','Supabase']}
+
+def localimg(src):
+    from PIL import Image as _I
+    w,h=_I.open('site'+src).size
+    return {'w':w,'h':h,'src':src,'thumb':src.replace('.jpg','-s.jpg'),'ratio':round(w/h,4)}
 projects=[]
 for p in sorted(L('projects'),key=lambda p:p['year'],reverse=True):
     if not truthy(p['publish']): continue
     projects.append({'title':p['title'],'slug':p['slug'],'summary':p['short_summary'],'description':p['description'],'category':p['category'],
       'type':p['type'],'year':p['year'],'url':p['project_url'],'tags':[t for t in ptags.get(p['id'],[]) if t],
-      'image':img(p['image_url'],'pr-'+p['slug'])})
+      'image':(localimg(p['image_url']) if p['image_url'].startswith('/media/') else img(p['image_url'],'pr-'+p['slug']))})
+    if p.get('tech_stack'): projects[-1]['stack']=p['tech_stack']
+    if p.get('built_with'): projects[-1]['built_with']=p['built_with']
+    if p.get('phone_image'): projects[-1]['phone']=localimg(p['phone_image'])
 ab=L('about_page')[0]
 about={'name':'Thomas Alan Smilie','subtitle':ab['subtitle'],'content':ab['content'],'portrait':img(ab['image_url'],'about',1400,700),
   'linkedin':'https://www.linkedin.com/in/tasmilie','writing':'https://onetobetter.com'}
